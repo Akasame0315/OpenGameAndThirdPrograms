@@ -1,6 +1,6 @@
 ﻿namespace WindowsFormsApp1
 {
-    partial class Form1
+    partial class OpenGameAndThirdPrograms
     {
         /// <summary>
         /// 設計工具所需的變數。
@@ -28,23 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.LOL_Btn = new System.Windows.Forms.Button();
             this.ChooseGame = new System.Windows.Forms.Label();
-            this.Clear_Btn = new System.Windows.Forms.Button();
             this.Confirm_Btn = new System.Windows.Forms.Button();
-            this.MS_Btm = new System.Windows.Forms.Button();
             this.Add_Btn = new System.Windows.Forms.Button();
+            this.ChooseGame_List = new System.Windows.Forms.ComboBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
-            // 
-            // LOL_Btn
-            // 
-            this.LOL_Btn.Location = new System.Drawing.Point(67, 59);
-            this.LOL_Btn.Name = "LOL_Btn";
-            this.LOL_Btn.Size = new System.Drawing.Size(167, 55);
-            this.LOL_Btn.TabIndex = 0;
-            this.LOL_Btn.Text = "LOL";
-            this.LOL_Btn.UseVisualStyleBackColor = true;
-            this.LOL_Btn.Click += new System.EventHandler(this.LOL_Btn_Click);
             // 
             // ChooseGame
             // 
@@ -56,16 +45,6 @@
             this.ChooseGame.Text = "No Game";
             this.ChooseGame.Click += new System.EventHandler(this.label1_Click);
             // 
-            // Clear_Btn
-            // 
-            this.Clear_Btn.Location = new System.Drawing.Point(313, 363);
-            this.Clear_Btn.Name = "Clear_Btn";
-            this.Clear_Btn.Size = new System.Drawing.Size(167, 55);
-            this.Clear_Btn.TabIndex = 2;
-            this.Clear_Btn.Text = "清除";
-            this.Clear_Btn.UseVisualStyleBackColor = true;
-            this.Clear_Btn.Click += new System.EventHandler(this.button1_Click);
-            // 
             // Confirm_Btn
             // 
             this.Confirm_Btn.Location = new System.Drawing.Point(558, 363);
@@ -74,20 +53,11 @@
             this.Confirm_Btn.TabIndex = 3;
             this.Confirm_Btn.Text = "確認";
             this.Confirm_Btn.UseVisualStyleBackColor = true;
-            // 
-            // MS_Btm
-            // 
-            this.MS_Btm.Location = new System.Drawing.Point(313, 59);
-            this.MS_Btm.Name = "MS_Btm";
-            this.MS_Btm.Size = new System.Drawing.Size(167, 55);
-            this.MS_Btm.TabIndex = 4;
-            this.MS_Btm.Text = "MS";
-            this.MS_Btm.UseVisualStyleBackColor = true;
-            this.MS_Btm.Click += new System.EventHandler(this.button1_Click_1);
+            this.Confirm_Btn.Click += new System.EventHandler(this.Confirm_Btn_Click);
             // 
             // Add_Btn
             // 
-            this.Add_Btn.Location = new System.Drawing.Point(67, 363);
+            this.Add_Btn.Location = new System.Drawing.Point(66, 352);
             this.Add_Btn.Name = "Add_Btn";
             this.Add_Btn.Size = new System.Drawing.Size(167, 55);
             this.Add_Btn.TabIndex = 5;
@@ -95,32 +65,44 @@
             this.Add_Btn.UseVisualStyleBackColor = true;
             this.Add_Btn.Click += new System.EventHandler(this.Add_Btn_Click);
             // 
-            // Form1
+            // ChooseGame_List
+            // 
+            this.ChooseGame_List.FormattingEnabled = true;
+            this.ChooseGame_List.Location = new System.Drawing.Point(333, 59);
+            this.ChooseGame_List.Name = "ChooseGame_List";
+            this.ChooseGame_List.Size = new System.Drawing.Size(121, 20);
+            this.ChooseGame_List.TabIndex = 6;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(93, 324);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 22);
+            this.textBox1.TabIndex = 7;
+            // 
+            // OpenGameAndThirdPrograms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.ChooseGame_List);
             this.Controls.Add(this.Add_Btn);
-            this.Controls.Add(this.MS_Btm);
             this.Controls.Add(this.Confirm_Btn);
-            this.Controls.Add(this.Clear_Btn);
             this.Controls.Add(this.ChooseGame);
-            this.Controls.Add(this.LOL_Btn);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "OpenGameAndThirdPrograms";
+            this.Text = "OpenGameAndThirdPrograms";
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button LOL_Btn;
         private System.Windows.Forms.Label ChooseGame;
-        private System.Windows.Forms.Button Clear_Btn;
         private System.Windows.Forms.Button Confirm_Btn;
-        private System.Windows.Forms.Button MS_Btm;
         private System.Windows.Forms.Button Add_Btn;
+        private System.Windows.Forms.ComboBox ChooseGame_List;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox, simpledialog, filedialog
+from tkinter import messagebox, simpledialog, filedialog, ttk
 
 from constants import *
 from app_data import load_apps, save_apps, load_config, save_config
@@ -16,6 +16,18 @@ def create_main_window():
     last_mode_var = tk.StringVar()
     last_mode_var.set(f"上次開啟：『{config.get('last_mode', '無')}』")
 
+    def create_launch_command(mode):
+        def launch():
+            status_var.set(f"正在準備啟動『{mode}』...")
+            progress_var.set(0)
+            launch_apps(
+                mode, apps[mode], config, root,
+                update_ui_callback=update_last_mode,
+                set_status=lambda msg: status_var.set(msg),
+                progress_callback=lambda val: progress_var.set(val)
+            )
+        return launch
+
     def refresh_ui():
         for widget in frame_container.winfo_children():
             widget.destroy()
@@ -23,9 +35,7 @@ def create_main_window():
             frame = tk.Frame(frame_container)
             frame.pack(pady=5)
 
-            tk.Button(frame, text=mode, width=18,
-                      command=lambda m=mode: launch_apps(m, apps[m], config, root, update_last_mode, set_status=lambda msg: status_var.set(msg)
-                        )).pack(side="left", padx=5)
+            tk.Button(frame, text=mode, width=18, command=create_launch_command(mode)).pack(side="left", padx=5)
             tk.Button(frame, text="✏️ 編輯", width=6, command=lambda m=mode: edit_mode(m)).pack(side="left")
             tk.Button(frame, text="🔤 更名", width=6, command=lambda m=mode: rename_mode(m)).pack(side="left")
             tk.Button(frame, text="🗑 刪除", width=6, fg="red", command=lambda m=mode: delete_mode(m)).pack(side="left")
@@ -117,11 +127,15 @@ def create_main_window():
 
     tk.Label(root, textvariable=last_mode_var, fg="gray").pack(pady=10)
 
-    status_var = tk.StringVar()
-    status_var.set("準備就緒")
+    # 狀態顯示區
+    status_var = tk.StringVar(value="準備就緒")
+    status_label = tk.Label(root, textvariable=status_var, fg="gray", anchor="w")
+    status_label.pack(fill="x", side="bottom", padx=10, pady=(5, 2))
 
-    status_bar = tk.Label(root, textvariable=status_var, fg="gray", anchor="w")
-    status_bar.pack(fill="x", side="bottom", padx=10, pady=5)
+    # 進度條區
+    progress_var = tk.DoubleVar()
+    progress_bar = ttk.Progressbar(root, maximum=100, variable=progress_var)
+    progress_bar.pack(fill="x", side="bottom", padx=10, pady=(0, 10))
 
     def update_auto_close(value):
         config["auto_close"] = value

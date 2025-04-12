@@ -24,7 +24,8 @@ def create_main_window():
             frame.pack(pady=5)
 
             tk.Button(frame, text=mode, width=18,
-                      command=lambda m=mode: launch_apps(m, apps[m], config, root, update_last_mode)).pack(side="left", padx=5)
+                      command=lambda m=mode: launch_apps(m, apps[m], config, root, update_last_mode, set_status=lambda msg: status_var.set(msg)
+                        )).pack(side="left", padx=5)
             tk.Button(frame, text="✏️ 編輯", width=6, command=lambda m=mode: edit_mode(m)).pack(side="left")
             tk.Button(frame, text="🔤 更名", width=6, command=lambda m=mode: rename_mode(m)).pack(side="left")
             tk.Button(frame, text="🗑 刪除", width=6, fg="red", command=lambda m=mode: delete_mode(m)).pack(side="left")
@@ -116,9 +117,16 @@ def create_main_window():
 
     tk.Label(root, textvariable=last_mode_var, fg="gray").pack(pady=10)
 
+    status_var = tk.StringVar()
+    status_var.set("準備就緒")
+
+    status_bar = tk.Label(root, textvariable=status_var, fg="gray", anchor="w")
+    status_bar.pack(fill="x", side="bottom", padx=10, pady=5)
+
     def update_auto_close(value):
         config["auto_close"] = value
         save_config(config)
 
     refresh_ui()
+    
     return root

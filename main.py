@@ -1,31 +1,33 @@
 import subprocess, os
-import time
+import time, json
 from logger_utils import setup_logger #for log error
 
 logger = setup_logger()  # 預設就是寫到 debug.log
+# 讀取 JSON 設定檔
+with open("AppList.json", "r", encoding="utf-8") as f:
+    app_sets = json.load(f)
 
-apps_to_open = [
-    r"C:\Windows\system32\notepad.exe",
-    r"C:\Windows\system32\calc.exe",
-    r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-]
+# 顯示可選擇的啟動模式
+print("🧭 請選擇要啟動的模式：")
+modes = list(app_sets.keys())
+for i, mode in enumerate(modes, start=1):
+    print(f"{i}. {mode}")
 
-for app in apps_to_open:
+# 讓使用者選擇
+try:
+    choice = int(input("輸入數字選擇："))
+    selected_mode = modes[choice - 1]
+except (IndexError, ValueError):
+    print("❌ 無效的選擇")
+    exit()
+
+# 執行對應程式
+print(f"\n🚀 正在啟動【{selected_mode}】...")
+for path in app_sets[selected_mode]:
     try:
-        subprocess.Popen([app])
-        logger.info(f"✅ 已啟動：{app}")
-        time.sleep(1)  # 可選：每個程式間隔 1 秒開啟
+        subprocess.Popen([path])
+        print(f"✅ 已啟動：{path}")        
+        # logger.info(f"✅ 已啟動：{path}")
     except Exception as e:
-        logger.info(f"⚠️ 無法開啟 {app}：{e}")
-
-files_to_open = [
-    r"C:\Users\user\source\repos"
-]
-
-for file in files_to_open:
-    try:
-        os.startfile(file)
-        logger.info(f"✅ 已開啟資料夾：{file}")
-        time.sleep(1)  # 可選：每個程式間隔 1 秒開啟
-    except Exception as e:
-        logger.info(f"⚠️ 無法開啟資料夾： {file}：{e}")
+        print(f"⚠️ 無法開啟 {path}：{e}")
+        # logger.info(f"⚠️ 無法開啟 {path}：{e}")

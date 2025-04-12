@@ -1,4 +1,4 @@
-import json, sys
+import json
 import subprocess
 import tkinter as tk
 from tkinter import messagebox, simpledialog
@@ -35,10 +35,21 @@ def launch_apps(mode):
             messagebox.showerror("錯誤", f"無法開啟：\n{path}\n{e}")
 
     # 記住上次開啟的模式
-    save_json(CONFIG_FILE, {"last_mode": mode})
+    save_last_mode(mode)
     # messagebox.showinfo("完成", f"『{mode}』模式啟動完成！")
-    if config.get("auto_close", True):
-        sys.exit()
+    if config.get("auto_close", False):
+        root.destroy()  # ← 關閉 GUI
+
+
+# 儲存時不蓋掉其他設定
+def save_last_mode(mode):
+    config["last_mode"] = mode
+    save_json(CONFIG_FILE, config)
+
+# 自動關閉GUI
+def toggle_auto_close():
+    config["auto_close"] = bool(auto_close_var.get())
+    save_json(CONFIG_FILE, config)
 
 # ========== 編輯功能 ==========
 def edit_mode(mode):
@@ -57,26 +68,65 @@ def edit_mode(mode):
         save_json(APP_FILE, app_sets)
         messagebox.showinfo("已儲存", f"『{mode}』已更新！")
 
+# ========== 刪除功能 ==========
+def delete_mode(mode):
+    if messagebox.askyesno("確認刪除", f"確定要刪除模式：『{mode}』？"):
+        del app_sets[mode]
+        save_json(APP_FILE, app_sets)
+        refresh_ui()
+        messagebox.showinfo("已刪除", f"『{mode}』模式已刪除。")
+
+# ========== 新增功能 ==========
+def add_mode():
+    new_mode = simpledialog.askstring("新增模式", "請輸入新模式名稱：")
+    if new_mode:
+        if new_mode in app_sets:
+            messagebox.showwarning("已存在", "這個模式名稱已經存在。")
+        else:
+            app_sets[new_mode] = []
+            save_json(APP_FILE, app_sets)
+            refresh_ui()
+            messagebox.showinfo("成功", f"『{new_mode}』模式已新增！")
+
+# 動態刷新 UI（重建按鈕列）
+def refresh_ui():
+    for widget in frame_container.winfo_children():
+        widget.destroy()
+
+    for mode in app_sets:
+        frame = tk.Frame(frame_container)
+        frame.pack(pady=5)
+
+        tk.Button(frame, text=mode, width=18, command=lambda m=mode: launch_apps(m)).pack(side="left", padx=5)
+        tk.Button(frame, text="✏️ 編輯", width=6, command=lambda m=mode: edit_mode(m)).pack(side="left")
+        tk.Button(frame, text="🗑 刪除", width=6, fg="red", command=lambda m=mode: delete_mode(m)).pack(side="left")
+
 # ========== 介面建立 ==========
 app_sets = load_json(APP_FILE, {})
 config = load_json(CONFIG_FILE, {})
 
 root = tk.Tk()
 root.title("程式啟動器 Launcher")
-root.geometry("360x400")
+root.geometry("400x500")
 
 tk.Label(root, text="請選擇要啟動的模式：", font=("Arial", 12)).pack(pady=10)
 
-for mode in app_sets:
-    frame = tk.Frame(root)
-    frame.pack(pady=5)
+# 加入新增模式按鈕
+tk.Button(root, text="➕ 新增模式", command=add_mode).pack(pady=5)
 
-    tk.Button(frame, text=mode, width=18, command=lambda m=mode: launch_apps(m)).pack(side="left", padx=5)
-    tk.Button(frame, text="✏️ 編輯", width=8, command=lambda m=mode: edit_mode(m)).pack(side="left")
+# 放模式按鈕的區域
+frame_container = tk.Frame(root)
+frame_container.pack(pady=10)
 
-# 顯示上次啟動的模式提示
+refresh_ui()
+
+# 顯示上次模式
 last_mode = config.get("last_mode")
 if last_mode:
     tk.Label(root, text=f"上次開啟：『{last_mode}』", fg="gray").pack(pady=10)
+
+# 放在主畫面 UI 初始化區：
+auto_close_var = tk.BooleanVar(value=config.get("auto_close", False))
+tk.Checkbutton(root, text="啟動後自動關閉程式", variable=auto_close_var, command=toggle_auto_close).pack(pady=5)
 
 root.mainloop()

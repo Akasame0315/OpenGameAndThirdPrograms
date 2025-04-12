@@ -36,7 +36,12 @@ def launch_apps(mode):
 
     # 記住上次開啟的模式
     save_last_mode(mode)
-    # messagebox.showinfo("完成", f"『{mode}』模式啟動完成！")
+    
+    # 更新UI文字(上次開啟的模式)
+    config["last_mode"] = mode
+    save_json(CONFIG_FILE, config)
+    last_mode_var.set(f"上次開啟：『{mode}』")
+
     if config.get("auto_close", False):
         root.destroy()  # ← 關閉 GUI
 
@@ -118,12 +123,16 @@ tk.Button(root, text="➕ 新增模式", command=add_mode).pack(pady=5)
 frame_container = tk.Frame(root)
 frame_container.pack(pady=10)
 
+# UI提示init
+last_mode_var = tk.StringVar()
+last_mode_var.set(f"上次開啟：『{config.get('last_mode', '無')}』")
+
 refresh_ui()
 
 # 顯示上次模式
 last_mode = config.get("last_mode")
 if last_mode:
-    tk.Label(root, text=f"上次開啟：『{last_mode}』", fg="gray").pack(pady=10)
+    tk.Label(root, textvariable=last_mode_var, fg="gray").pack(pady=10)
 
 # 放在主畫面 UI 初始化區：
 auto_close_var = tk.BooleanVar(value=config.get("auto_close", False))

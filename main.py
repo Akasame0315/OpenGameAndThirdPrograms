@@ -1,33 +1,43 @@
-import subprocess, os
-import time, json
-from logger_utils import setup_logger #for log error
+import json
+import subprocess
+import tkinter as tk
+from tkinter import messagebox
 
-logger = setup_logger()  # 預設就是寫到 debug.log
-# 讀取 JSON 設定檔
-with open("AppList.json", "r", encoding="utf-8") as f:
-    app_sets = json.load(f)
-
-# 顯示可選擇的啟動模式
-print("🧭 請選擇要啟動的模式：")
-modes = list(app_sets.keys())
-for i, mode in enumerate(modes, start=1):
-    print(f"{i}. {mode}")
-
-# 讓使用者選擇
-try:
-    choice = int(input("輸入數字選擇："))
-    selected_mode = modes[choice - 1]
-except (IndexError, ValueError):
-    print("❌ 無效的選擇")
-    exit()
-
-# 執行對應程式
-print(f"\n🚀 正在啟動【{selected_mode}】...")
-for path in app_sets[selected_mode]:
+# 讀取 JSON 檔案
+def load_app_sets():
     try:
-        subprocess.Popen([path])
-        print(f"✅ 已啟動：{path}")        
-        # logger.info(f"✅ 已啟動：{path}")
+        with open("AppList.json", "r", encoding="utf-8") as f:
+            return json.load(f)
     except Exception as e:
-        print(f"⚠️ 無法開啟 {path}：{e}")
-        # logger.info(f"⚠️ 無法開啟 {path}：{e}")
+        messagebox.showerror("錯誤", f"讀取 AppList.json 失敗：\n{e}")
+        return {}
+
+# 點擊按鈕後開啟對應應用程式
+def launch_apps(mode):
+    apps = app_sets.get(mode, [])
+    if not apps:
+        messagebox.showwarning("沒有程式", f"『{mode}』沒有設定任何程式。")
+        return
+    
+    for path in apps:
+        try:
+            subprocess.Popen([path])
+        except Exception as e:
+            messagebox.showerror("錯誤", f"無法開啟：\n{path}\n{e}")
+
+    messagebox.showinfo("完成", f"『{mode}』模式啟動完成！")
+
+# 建立主視窗
+app_sets = load_app_sets()
+root = tk.Tk()
+root.title("程式啟動器 Launcher")
+root.geometry("300x200")
+
+tk.Label(root, text="請選擇要啟動的模式：", font=("Arial", 12)).pack(pady=10)
+
+# 動態建立按鈕
+for mode in app_sets:
+    tk.Button(root, text=mode, width=20, height=2, command=lambda m=mode: launch_apps(m)).pack(pady=5)
+
+# 開始 GUI 主迴圈
+root.mainloop()

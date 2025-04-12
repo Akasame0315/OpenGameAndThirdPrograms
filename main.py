@@ -1,7 +1,7 @@
 import json
 import subprocess
 import tkinter as tk
-from tkinter import messagebox, simpledialog
+from tkinter import messagebox, simpledialog, filedialog
 import os
 
 # ========== 資料存取 ==========
@@ -58,20 +58,42 @@ def toggle_auto_close():
 
 # ========== 編輯功能 ==========
 def edit_mode(mode):
-    current_list = app_sets.get(mode, [])
-    current_text = "\n".join(current_list)
-
-    new_text = simpledialog.askstring(
-        f"編輯模式：{mode}",
-        "請輸入完整應用程式路徑，一行一個：",
-        initialvalue=current_text
-    )
-
-    if new_text is not None:
+    def save_edited():
+        new_text = text_box.get("1.0", tk.END)
         new_list = [line.strip() for line in new_text.splitlines() if line.strip()]
         app_sets[mode] = new_list
         save_json(APP_FILE, app_sets)
+        edit_window.destroy()
+        refresh_ui()
         messagebox.showinfo("已儲存", f"『{mode}』已更新！")
+
+    def add_file():
+        file_path = filedialog.askopenfilename(
+            title="選擇應用程式",
+            filetypes=[("可執行檔", "*.exe")]
+        )
+        if file_path:
+            text_box.insert(tk.END, file_path + "\n")
+
+    # 建立編輯視窗
+    edit_window = tk.Toplevel(root)
+    edit_window.title(f"編輯模式：{mode}")
+    edit_window.geometry("500x400")
+    edit_window.minsize(500, 350)  # 限制編輯視窗不要太小
+    
+    text_box = tk.Text(edit_window, font=("Consolas", 10), height=15)
+    text_box.pack(fill="both", expand=True, padx=10, pady=10)
+
+    # 預填內容
+    for path in app_sets.get(mode, []):
+        text_box.insert(tk.END, path + "\n")
+
+    btn_frame = tk.Frame(edit_window)
+    btn_frame.pack(pady=5)
+    btn_style = {"width": 15, "height": 2, "font": ("Arial", 10)}
+
+    tk.Button(btn_frame, text="📂 加入檔案", command=add_file, **btn_style).pack(side="left", padx=5)
+    tk.Button(btn_frame, text="💾 儲存", command=save_edited, **btn_style).pack(side="left", padx=5)
 
 # ========== 刪除功能 ==========
 def delete_mode(mode):
